@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.7.5"
+axum = { version = "0.7.5", features = ["json"] }
 tokio = { version = "1.38.1", features = ["rt", "rt-multi-thread"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 mlua = { git = "https://github.com/mlua-rs/mlua.git", features = ["luau"] }
+serde = { version = "1.0.204", features = ["derive"] }
