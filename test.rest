@@ -1,0 +1,16 @@
+### /compile
+POST http://localhost:8000/compile
+content-type: application/json
+
+{
+    "source": "print('Hello World!')",
+    "options": {
+        "coverage_level": 2,
+        "debug_level": 2,
+        "optimization_level": 2,
+        "type_info_level": 1,
+        "vector_lib": "Vector3",
+        "vector_ctor": "new",
+        "vector_type": "Vector3"
+    }
+}
