@@ -3,10 +3,14 @@ name = "luau-compile"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+shuttle = ["dep:shuttle-axum", "dep:shuttle-runtime"]
+
 [dependencies]
 axum = { version = "0.7.5", features = ["json"] }
 tokio = { version = "1.38.1", features = ["rt", "rt-multi-thread"] }
-tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
 mlua = { git = "https://github.com/mlua-rs/mlua.git", features = ["luau"] }
 serde = { version = "1.0.204", features = ["derive"] }
+shuttle-axum = { version = "0.46.0", optional = true }
+shuttle-runtime = { version = "0.46.0", optional = true }

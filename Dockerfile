@@ -12,13 +12,13 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # regular build of application, dependencies are all ready
 COPY . .
-RUN cargo build --release --bin app
+RUN cargo build --release
 
 # rust toolchain isn't needed!
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
-COPY --from=builder /app/target/release/app /usr/local/bin
+COPY --from=builder /app/target/release/luau-compile /usr/local/bin/app
 
-EXPOSE 3000
+EXPOSE 3000:3000
 
 ENTRYPOINT ["/usr/local/bin/app"]

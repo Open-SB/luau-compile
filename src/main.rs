@@ -2,14 +2,24 @@ use axum::{routing::post, Json, Router};
 use mlua::Compiler;
 use serde::Deserialize;
 
+fn create_router() -> Router {
+    // Developer notes: https://docs.rs/axum/latest/axum/extract/index.html#common-extractors
+    Router::new().route("/compile", post(compile_route))
+}
+
+#[cfg(not(feature = "shuttle"))]
 #[tokio::main]
 async fn main() {
-    // Developer notes: https://docs.rs/axum/latest/axum/extract/index.html#common-extractors
-    tracing_subscriber::fmt::init();
-
-    let router = Router::new().route("/compile", post(compile_route));
+    let router = create_router();
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, router).await.unwrap();
+}
+
+#[cfg(feature = "shuttle")]
+#[shuttle_runtime::main]
+async fn main() -> shuttle_axum::ShuttleAxum {
+    let router = create_router();
+    Ok(router.into())
 }
 
 // https://github.com/mlua-rs/mlua/blob/b77836920a5db89067892f4fd9c88db1a0483a8a/src/chunk.rs#L122
