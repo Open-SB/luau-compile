@@ -62,7 +62,7 @@ async fn compile_route(
         Ok(bytecode) => Ok(bytecode),
 
         Err(err) => match err {
-            // If it is a syntax error, we still return OK with byte 0 followed by the error message in bytes
+            // If it is a syntax error, we return a 422 Unprocessable Content with the error message as body
             LuaError::SyntaxError {
                 message,
                 incomplete_input: _,
