@@ -8,9 +8,9 @@ default = []
 shuttle = ["dep:shuttle-axum", "dep:shuttle-runtime"]
 
 [dependencies]
-axum = { version = "0.7.5", features = ["json"] }
-tokio = { version = "1.38.1", features = ["rt", "rt-multi-thread"] }
+axum = { version = "0.7.9", features = ["json"] }
+tokio = { version = "1.42.0", features = ["rt", "rt-multi-thread"] }
 mlua = { git = "https://github.com/mlua-rs/mlua.git", features = ["luau"] }
-serde = { version = "1.0.204", features = ["derive"] }
-shuttle-axum = { version = "0.46.0", optional = true }
-shuttle-runtime = { version = "0.46.0", optional = true }
+serde = { version = "1.0.217", features = ["derive"] }
+shuttle-axum = { version = "0.49.0", optional = true }
+shuttle-runtime = { version = "0.49.0", optional = true }

@@ -1,5 +1,5 @@
-use axum::{routing::post, Json, Router};
-use mlua::Compiler;
+use axum::{http::StatusCode, routing::post, Json, Router};
+use mlua::{Compiler, Error as LuaError};
 use serde::Deserialize;
 
 fn create_router() -> Router {
@@ -40,7 +40,9 @@ pub struct CompilerPayload {
     pub options: CompilerOptions,
 }
 
-async fn compile_route(Json(payload): Json<CompilerPayload>) -> Vec<u8> {
+async fn compile_route(
+    Json(payload): Json<CompilerPayload>,
+) -> Result<Vec<u8>, (StatusCode, String)> {
     let options = payload.options;
     let compiler = Compiler::new()
         .set_coverage_level(options.coverage_level)
@@ -50,10 +52,29 @@ async fn compile_route(Json(payload): Json<CompilerPayload>) -> Vec<u8> {
         .set_vector_lib(options.vector_lib)
         .set_vector_ctor(options.vector_ctor)
         .set_vector_type(options.vector_type);
-    // compile calls into luacode.h's luau_compile
-    // which means that we cannot get the same error handling; however
-    // Fiu detects errors in the bytecode
-    let bytecode = compiler.compile(payload.source);
+
+    // Compile calls into luacode.h's luau_compile
+    let result = compiler.compile(payload.source);
     drop(compiler);
-    bytecode
+
+    match result {
+        // If OK then just return bytecode
+        Ok(bytecode) => Ok(bytecode),
+
+        Err(err) => match err {
+            // If it is a syntax error, we still return OK with byte 0 followed by the error message in bytes
+            LuaError::SyntaxError {
+                message,
+                incomplete_input: _,
+            } => Err((StatusCode::UNPROCESSABLE_ENTITY, message)),
+
+            // Out of memory error
+            LuaError::MemoryError(message) => Err((StatusCode::INSUFFICIENT_STORAGE, message)),
+
+            _ => Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Unknown error".to_string(),
+            )),
+        },
+    }
 }
