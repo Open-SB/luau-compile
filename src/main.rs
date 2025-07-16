@@ -49,8 +49,7 @@ async fn compile_route(
         .set_debug_level(options.debug_level)
         .set_optimization_level(options.optimization_level)
         .set_type_info_level(options.type_info_level)
-        .set_vector_lib(options.vector_lib)
-        .set_vector_ctor(options.vector_ctor)
+        .set_vector_ctor(format!("{}.{}", options.vector_lib, options.vector_ctor))
         .set_vector_type(options.vector_type);
 
     // Compile calls into luacode.h's luau_compile
