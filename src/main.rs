@@ -1,7 +1,7 @@
 use axum::{
     Json, Router,
     http::StatusCode,
-    routing::{get, post},
+    routing::{get, head, post},
 };
 use mlua::{Compiler, Error as LuaError};
 use serde::Deserialize;
@@ -15,6 +15,7 @@ fn create_router() -> Router {
     Router::new()
         .route("/compile", post(compile_route))
         .route("/health", get(health_route))
+        .route("/health", head(health_route))
 }
 
 #[cfg(not(feature = "shuttle"))]
