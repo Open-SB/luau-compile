@@ -1,17 +1,27 @@
-use axum::{http::StatusCode, routing::post, Json, Router};
+use axum::{
+    Json, Router,
+    http::StatusCode,
+    routing::{get, post},
+};
 use mlua::{Compiler, Error as LuaError};
 use serde::Deserialize;
 
+async fn health_route() -> &'static str {
+    "service is healthy"
+}
+
 fn create_router() -> Router {
-    // Developer notes: https://docs.rs/axum/latest/axum/extract/index.html#common-extractors
-    Router::new().route("/compile", post(compile_route))
+    // https://docs.rs/axum/latest/axum/extract/index.html#common-extractors
+    Router::new()
+        .route("/compile", post(compile_route))
+        .route("/health", get(health_route))
 }
 
 #[cfg(not(feature = "shuttle"))]
 #[tokio::main]
 async fn main() {
     let router = create_router();
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, router).await.unwrap();
 }
 
@@ -57,7 +67,7 @@ async fn compile_route(
     drop(compiler);
 
     match result {
-        // If OK then just return bytecode
+        // If ok then just return bytecode
         Ok(bytecode) => Ok(bytecode),
 
         Err(err) => match err {
