@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     routing::{get, head, post},
 };
-use mlua::{Compiler, Error as LuaError};
+use mlua::{chunk::Compiler, Error as LuaError};
 use serde::Deserialize;
 
 async fn health_route() -> &'static str {
